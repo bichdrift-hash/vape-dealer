@@ -2,138 +2,756 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vape Dealer Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vape Dealer Catalog</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--tg-theme-bg-color, #1a1a1a);
-            color: var(--tg-theme-text-color, #ffffff);
+        :root {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #ffffff;
+            --text-muted: #aaaaaa;
+            --accent-color: #00ff88;
+            --accent-hover: #00e575;
+            --danger-color: #ff4a4a;
+            --border-radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 15px;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-        h2 {
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-bottom: 90px;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 20px;
             text-align: center;
-            color: #2ec4b6;
+            background: linear-gradient(180deg, #1f1f1f 0%, #121212 100%);
+            border-bottom: 1px solid #2a2a2a;
         }
-        .product-list {
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: var(--text-color);
+        }
+
+        header p {
+            font-size: 12px;
+            color: var(--accent-color);
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        .container {
+            padding: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Кнопка "Назад" */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            background: #2a2a2a;
+            color: var(--text-color);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 15px;
+            transition: 0.2s;
+        }
+
+        .back-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Сетка брендов (Главный экран) */
+        .brands-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
-            margin-bottom: 80px;
+            margin-top: 10px;
         }
-        .product-card {
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 10px;
+
+        .brand-card {
+            background: var(--container-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
             text-align: center;
-            background: var(--tg-theme-secondary-bg-color, #242424);
-        }
-        .product-title {
-            font-weight: bold;
-            font-size: 14px;
-            margin: 8px 0;
-        }
-        .product-price {
-            color: #2ec4b6;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        .btn {
-            background-color: var(--tg-theme-button-color, #2481cc);
-            color: var(--tg-theme-button-text-color, #ffffff);
-            border: none;
-            border-radius: 8px;
-            padding: 8px 12px;
+            border: 1px solid #2c2c2c;
             cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .brand-card:active {
+            transform: scale(0.97);
+            border-color: var(--accent-color);
+        }
+
+        .brand-logo {
+            width: 70px;
+            height: 70px;
+            background: #2a2a2a;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: var(--accent-color);
+            border: 2px solid #3a3a3a;
+        }
+
+        .brand-name {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .brand-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* Список товаров */
+        .products-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .product-card {
+            background: var(--container-bg);
+            border-radius: var(--border-radius);
+            border: 1px solid #2a2a2a;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .product-img-container {
+            width: 100%;
+            height: 140px;
+            background: #252525;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .product-info {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-title {
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+
+        .product-price {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--accent-color);
+            margin-top: auto;
+            margin-bottom: 8px;
+        }
+
+        .add-to-cart-btn {
+            background: #2a2a2a;
+            color: var(--text-color);
+            border: none;
+            border-radius: 10px;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
             width: 100%;
         }
-        .cart-counter {
-            background: #e71d36;
-            color: white;
-            padding: 2px 6px;
+
+        .add-to-cart-btn:active {
+            background: var(--accent-color);
+            color: #000;
+            transform: scale(0.95);
+        }
+
+        /* Детали товара (Модальное окно) */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        .modal-content {
+            background: var(--container-bg);
+            width: 100%;
+            max-width: 600px;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            padding: 25px;
+            position: relative;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #333;
+            color: #fff;
+            border: none;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .modal-img-container {
+            width: 100%;
+            height: 200px;
+            background: #252525;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .modal-img {
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .modal-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .modal-price {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        /* Панель корзины внизу */
+        .cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #1e1e1e;
+            border-top: 1px solid #2a2a2a;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .cart-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-count {
             font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .cart-total {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--accent-color);
+        }
+
+        .order-btn {
+            background: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .order-btn:active {
+            transform: scale(0.95);
+            background: var(--accent-hover);
+        }
+
+        /* Окно оформления заказа */
+        .order-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1100;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .order-box {
+            background: var(--container-bg);
+            border-radius: 20px;
+            padding: 25px;
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .order-box textarea {
+            width: 100%;
+            height: 150px;
+            background: #121212;
+            color: #fff;
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 15px 0;
+            resize: none;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-group button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+        }
+
+        .copy-btn {
+            background: var(--accent-color);
+            color: #000;
+        }
+
+        .cancel-btn {
+            background: #333;
+            color: #fff;
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
 <body>
 
-    <h2>Vape Dealer Catalog 💨</h2>
-    
-    <div class="product-list" id="products">
-        <!-- Товары добавятся автоматически -->
+    <header>
+        <h1>VAPE DEALER</h1>
+        <p>Каталог и резерв товаров</p>
+    </header>
+
+    <div class="container">
+        <!-- Экран 1: Выбор Брендов -->
+        <div id="brands-screen">
+            <h3 style="margin-bottom: 15px; font-weight: 700;">Выберите производителя:</h3>
+            <div class="brands-grid">
+                <!-- Бренд Elfliq -->
+                <div class="brand-card" onclick="openBrand('elfliq')">
+                    <div class="brand-logo">💨</div>
+                    <div class="brand-name">Elfliq</div>
+                    <div class="brand-desc">Жидкости от Elf Bar</div>
+                </div>
+                <!-- Бренд 2 (Для примера) -->
+                <div class="brand-card" onclick="openBrand('lostmary')">
+                    <div class="brand-logo">🍓</div>
+                    <div class="brand-name">Lost Mary</div>
+                    <div class="brand-desc">Насыщенные вкусы</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран 2: Список вкусов бренда -->
+        <div id="products-screen" class="hidden">
+            <button class="back-btn" onclick="showBrandsScreen()">⬅️ К производителям</button>
+            <h3 id="selected-brand-title" style="margin-bottom: 15px; font-weight: 800;">Вкусы</h3>
+            <div class="products-grid" id="products-list">
+                <!-- Товары рендерятся скриптом ниже -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка детальной карточки вкуса -->
+    <div class="modal" id="product-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeProductModal()">✕</button>
+            <div class="modal-img-container">
+                <img src="" id="modal-item-img" class="modal-img" alt="">
+            </div>
+            <div class="modal-title" id="modal-item-title">Название</div>
+            <div class="modal-desc" id="modal-item-desc">Описание вкуса</div>
+            <div class="modal-price" id="modal-item-price">0 MDL</div>
+            <button class="order-btn" style="width: 100%;" id="modal-add-btn">Добавить в корзину</button>
+        </div>
+    </div>
+
+    <!-- Корзина снизу -->
+    <div class="cart-bar" id="cart-bar">
+        <div class="cart-info">
+            <span class="cart-count" id="cart-count">В корзине: 0 шт.</span>
+            <span class="cart-total" id="cart-total">0 MDL</span>
+        </div>
+        <button class="order-btn" onclick="openOrderModal()">Оформить</button>
+    </div>
+
+    <!-- Окно итогового заказа -->
+    <div class="order-modal" id="order-modal">
+        <div class="order-box">
+            <h3>🛍️ Твой заказ готов!</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">
+                Скопируй текст ниже и пришли его оператору в Telegram.
+            </p>
+            <textarea id="order-text-area" readonly></textarea>
+            <div class="btn-group">
+                <button class="cancel-btn" onclick="closeOrderModal()">Закрыть</button>
+                <button class="copy-btn" onclick="copyOrderText()">Скопировать текст</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+        // Инициализация Telegram WebApp
+        const tg = window.Telegram?.WebApp;
+        if (tg) {
+            tg.expand();
+            tg.ready();
+        }
 
-        // Список товаров (можно менять вкусы и цены прямо тут)
-        const products = [
-            { id: 1, name: "ElfLiq - Elf Jack 30ml", price: 180 },
-            { id: 2, name: "Pink Grapefruit 30ml", price: 180 },
-            { id: 3, name: "Blackberry Lemon 30ml", price: 180 }
-        ];
-
-        let cart = {};
-        const productsContainer = document.getElementById("products");
-
-        products.forEach(p => {
-            const card = document.createElement("div");
-            card.className = "product-card";
-            card.innerHTML = `
-                <div class="product-title">${p.name}</div>
-                <div class="product-price">${p.price} MDL</div>
-                <button class="btn" onclick="addToCart(${p.id})">В корзину <span id="count-${p.id}" class="cart-counter" style="display:none;">0</span></button>
-            `;
-            productsContainer.appendChild(card);
-        });
-
-        window.addToCart = function(id) {
-            const product = products.find(p => p.id === id);
-            if (!cart[id]) {
-                cart[id] = { name: product.name, price: product.price, count: 0 };
-            }
-            cart[id].count++;
-            
-            const counter = document.getElementById(`count-${id}`);
-            counter.innerText = cart[id].count;
-            counter.style.display = "inline-block";
-
-            updateMainButton();
+        // БАЗА ДАННЫХ ТОВАРОВ С КАРТИНКАМИ
+        const productsData = {
+            elfliq: [
+                {
+                    id: 'elfliq_apple_peach',
+                    title: '🍎🍑 Яблоко Персик',
+                    price: 180,
+                    desc: 'Гармоничный дуэт хрустящего спелого яблока и нежного, сладкого персика. Сбалансированный фруктовый вкус на каждый день.',
+                    img: 'https://images.unsplash.com/photo-1619546813926-a78fa6372cd2?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_blackberry_lemon',
+                    title: '🍇🍋 Ежевика Лимон',
+                    price: 180,
+                    desc: 'Сладкая лесная ежевика с пикантной кислинкой свежевыжатого лимона. Идеальный кисло-сладкий ягодный микс.',
+                    img: 'https://images.unsplash.com/photo-1601004890684-d8cbf643f5f2?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_blue_razz_ice',
+                    title: '🫐❄️ Голубая Малина Лед',
+                    price: 180,
+                    desc: 'Легендарный вкус сладкой голубой малины, дополненный мощной волной ледяной свежести на выдохе.',
+                    img: 'https://images.unsplash.com/photo-1618897996318-5a901fa6ca71?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_blueberry_rose_mint',
+                    title: '🫐🌹🌱 Черника Роза Мята',
+                    price: 180,
+                    desc: 'Изысканное и необычное сочетание: спелая садовая черника, нежный цветочный аромат лепестков розы и легкий освежающий штрих дикой мяты.',
+                    img: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_blueberry_sour_raspberry',
+                    title: '🫐💥 Черника Кислая Малина',
+                    price: 180,
+                    desc: 'Яркий контраст вкусов! Сладкая черничная глубина плавно переходит в дерзкую кислинку дикой малины.',
+                    img: 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_cherry_cola',
+                    title: '🍒🥤 Вишневая Кола',
+                    price: 180,
+                    desc: 'Классический вкус любимой газировки кола с добавлением густого, терпкого сока спелой темной вишни.',
+                    img: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_cherry_lemon_peach',
+                    title: '🍒🍋🍑 Вишня Лимон Персик',
+                    price: 180,
+                    desc: 'Многогранный фруктово-ягодный коктейль: терпкая вишня, кислый бодрящий лимон и бархатистый сладкий персик.',
+                    img: 'https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_elf_jack',
+                    title: '🧃 Эльф Джек',
+                    price: 180,
+                    desc: 'Секретный фирменный микс, напоминающий вкус знаменитого яблочно-смородинового сока с легкой пряной ноткой.',
+                    img: 'https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_energy_ice',
+                    title: '⚡️❄️ Энергетик Лед',
+                    price: 180,
+                    desc: 'Бодрящий, сладкий и терпкий вкус классического энергетического напитка с мощным ледяным кулером для тонуса.',
+                    img: 'https://images.unsplash.com/photo-1622543956221-c4d3eb475960?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_green_grape_rose',
+                    title: '🍇🌹 Зеленый Виноград Роза',
+                    price: 180,
+                    desc: 'Нежное сочетание сочного, слегка кисленького зеленого винограда и утонченного, ароматного шлейфа чайной розы.',
+                    img: 'https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_jasmine_raspberry',
+                    title: '🌸🍇 Жасмин Малина',
+                    price: 180,
+                    desc: 'Цветочная экзотика! Насыщенный аромат благоухающего жасмина великолепно переплетается со сладкой спелой малиной.',
+                    img: 'https://images.unsplash.com/photo-1596701062351-df1f8d368a85?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_kiwi_passion_guava',
+                    title: '🥝🍹 Киви Маракуйя Гуава',
+                    price: 180,
+                    desc: 'Легендарный тропический взрыв: кисловатый зеленый киви, ароматная кисло-сладкая маракуйя и нежная спелая розовая гуава.',
+                    img: 'https://images.unsplash.com/photo-1526157282365-983240adfc94?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_pina_colada',
+                    title: '🥥🍍 Пина Колада',
+                    price: 180,
+                    desc: 'Аромат тропического побережья: нежные кокосовые сливки в сочетании со сладким, брызжущим соком спелого ананаса.',
+                    img: 'https://images.unsplash.com/photo-1546173159-315724a31696?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_pink_lemonade',
+                    title: '🍋 Розовый Лимонад',
+                    price: 180,
+                    desc: 'Освежающий летний лимонад из спелых красных ягод и сочного лимона с идеальным балансом сладости и кислинки.',
+                    img: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=300&auto=format&fit=crop'
+                },
+                {
+                    id: 'elfliq_strawberry_cherry_lemon',
+                    title: '🍓🍒🍋 Клубника Вишня Лимон',
+                    price: 180,
+                    desc: 'Богатое трио: ароматная садовая клубника, глубокий вкус спелой вишни и бодрящий акцент свежего лимона.',
+                    img: 'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=300&auto=format&fit=crop'
+                }
+            ],
+            lostmary: [] 
         };
 
-        function updateMainButton() {
-            let totalItems = 0;
-            let totalPrice = 0;
-            for (let id in cart) {
-                totalItems += cart[id].count;
-                totalPrice += cart[id].count * cart[id].price;
-            }
+        let cart = {}; // Корзина вида { id: количество }
+        let currentActiveProduct = null;
 
-            if (totalItems > 0) {
-                tg.MainButton.text = `Оформить заказ: ${totalPrice} MDL (${totalItems} шт)`;
-                tg.MainButton.show();
+        // Навигация
+        function openBrand(brandKey) {
+            document.getElementById('brands-screen').classList.add('hidden');
+            document.getElementById('products-screen').classList.remove('hidden');
+            
+            const brandTitle = brandKey === 'elfliq' ? 'ELFLIQ' : 'LOST MARY';
+            document.getElementById('selected-brand-title').innerText = brandTitle;
+
+            renderProducts(brandKey);
+        }
+
+        function showBrandsScreen() {
+            document.getElementById('products-screen').classList.add('hidden');
+            document.getElementById('brands-screen').classList.remove('hidden');
+        }
+
+        // Рендер товаров
+        function renderProducts(brandKey) {
+            const listContainer = document.getElementById('products-list');
+            listContainer.innerHTML = '';
+
+            const products = productsData[brandKey] || [];
+            products.forEach(p => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.onclick = (e) => {
+                    if (!e.target.classList.contains('add-to-cart-btn')) {
+                        openProductModal(p);
+                    }
+                };
+
+                card.innerHTML = `
+                    <div class="product-img-container">
+                        <img src="${p.img}" class="product-img" alt="${p.title}">
+                    </div>
+                    <div class="product-info">
+                        <div class="product-title">${p.title}</div>
+                        <div class="product-price">${p.price} MDL</div>
+                        <button class="add-to-cart-btn" onclick="addToCart('${p.id}', ${p.price}, '${p.title}')">
+                            В корзину ${cart[p.id] ? `(${cart[p.id]})` : ''}
+                        </button>
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+
+        // Логика корзины
+        function addToCart(id, price, title) {
+            if (cart[id]) {
+                cart[id]++;
             } else {
-                tg.MainButton.hide();
+                cart[id] = 1;
+            }
+            updateCartBar();
+            
+            // Если открыт экран конкретного бренда, перерендерим кнопки товаров
+            const activeBrand = document.getElementById('selected-brand-title').innerText.toLowerCase().replace(' ', '');
+            if (activeBrand.includes('elfliq')) renderProducts('elfliq');
+            if (activeBrand.includes('lostmary')) renderProducts('lostmary');
+
+            if (currentActiveProduct && currentActiveProduct.id === id) {
+                document.getElementById('modal-add-btn').innerText = `Добавить в корзину (${cart[id]})`;
             }
         }
 
-        tg.onEvent('mainButtonClicked', function() {
-            let orderSummary = "";
+        function updateCartBar() {
+            let totalItems = 0;
             let totalPrice = 0;
-            for (let id in cart) {
-                const item = cart[id];
-                orderSummary += `• ${item.name} x${item.count} — ${item.count * item.price} MDL\n`;
-                totalPrice += item.count * item.price;
-            }
-            orderSummary += `\n💰 Итого: ${totalPrice} MDL`;
 
-            tg.sendData(orderSummary);
-            tg.close();
-        });
+            for (const id in cart) {
+                const qty = cart[id];
+                const product = findProductById(id);
+                if (product) {
+                    totalItems += qty;
+                    totalPrice += product.price * qty;
+                }
+            }
+
+            document.getElementById('cart-count').innerText = `В корзине: ${totalItems} шт.`;
+            document.getElementById('cart-total').innerText = `${totalPrice} MDL`;
+        }
+
+        function findProductById(id) {
+            for (const brand in productsData) {
+                const found = productsData[brand].find(p => p.id === id);
+                if (found) return found;
+            }
+            return null;
+        }
+
+        // Модалка товара
+        function openProductModal(product) {
+            currentActiveProduct = product;
+            document.getElementById('modal-item-img').src = product.img;
+            document.getElementById('modal-item-title').innerText = product.title;
+            document.getElementById('modal-item-desc').innerText = product.desc;
+            document.getElementById('modal-item-price').innerText = `${product.price} MDL`;
+            
+            const addBtn = document.getElementById('modal-add-btn');
+            addBtn.innerText = cart[product.id] ? `Добавить в корзину (${cart[product.id]})` : 'Добавить в корзину';
+            addBtn.onclick = () => addToCart(product.id, product.price, product.title);
+
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').style.display = 'none';
+            currentActiveProduct = null;
+        }
+
+        // Оформление заказа
+        function openOrderModal() {
+            let orderText = "📝 НОВЫЙ РЕЗЕРВ VAPE DEALER:\n\n";
+            let totalPrice = 0;
+            let hasItems = false;
+
+            for (const id in cart) {
+                const qty = cart[id];
+                const product = findProductById(id);
+                if (product) {
+                    hasItems = true;
+                    orderText += `• ${product.title} x${qty} — ${product.price * qty} MDL\n`;
+                    totalPrice += product.price * qty;
+                }
+            }
+
+            if (!hasItems) {
+                alert("Ваша корзина пуста!");
+                return;
+            }
+
+            orderText += `\n💵 Итого к оплате: ${totalPrice} MDL\n`;
+            orderText += "📍 Выдача: Бельцы / Кишинёв (18+)\n";
+            orderText += "\nНапишите операторам @vape_dealermd или @ebywz для получения!";
+
+            document.getElementById('order-text-area').value = orderText;
+            document.getElementById('order-modal').style.display = 'flex';
+        }
+
+        function closeOrderModal() {
+            document.getElementById('order-modal').style.display = 'none';
+        }
+
+        function copyOrderText() {
+            const textArea = document.getElementById('order-text-area');
+            textArea.select();
+            textArea.setSelectionRange(0, 99999); // Для мобильных
+
+            try {
+                document.execCommand('copy');
+                alert('Текст заказа скопирован! Теперь просто отправь его оператору в чат.');
+            } catch (err) {
+                alert('Не удалось скопировать автоматически. Пожалуйста, выделите текст и скопируйте его вручную.');
+            }
+        }
     </script>
 </body>
 </html>
