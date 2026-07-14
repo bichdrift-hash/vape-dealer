@@ -2,33 +2,17 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Vape Dealer Shop</title>
-    <!-- Подключаем Telegram Web Apps SDK -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { 
+            background-color: #212121; /* Тёмный фон как в Telegram */
+            color: #ffffff;           /* Белый текст */
+            font-family: sans-serif; 
+            padding: 20px; 
+        }
+    </style>
 </head>
 <body>
     <h1>Добро пожаловать в Vape Dealer!</h1>
-    <p>Здесь будет твой каталог товаров.</p>
-    
-    <!-- Твоя функция здесь -->
-    <script>
-        function copyOrderText() {
-            const orderText = document.getElementById('order-text-area').value;
-            if (window.Telegram && window.Telegram.WebApp) {
-                const tg = window.Telegram.WebApp;
-                tg.sendData(orderText);
-                tg.close();
-            } else {
-                const textArea = document.getElementById('order-text-area');
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    alert('Текст заказа скопирован!');
-                } catch (err) {
-                    alert('Не удалось скопировать.');
-                }
-            }
-        }
-    </script>
+    <p>Здесь скоро появится каталог наших жидкостей и устройств.</p>
 </body>
 </html>
