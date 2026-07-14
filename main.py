@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
 
@@ -10,6 +10,9 @@ WEB_APP_URL = "https://bichdrift-hash.github.io/vape-dealer/"
 
 OPERATOR_MAIN = "@vape_dealermd"  # Твой контакт
 OPERATOR_ALT = "@ebywz"          # Второй контакт
+
+# СЮДА ВСТАВЬ СВОЙ ID ИЗ БОТА @myidbot (число без кавычек)
+ADMIN_CHAT_ID = 8275231458
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
@@ -74,13 +77,43 @@ async def process_info(callback: types.CallbackQuery):
     )
     await callback.answer()
 
+# ОБНОВЛЕННЫЙ ПРИЕМ ЗАКАЗА: отправляет его тебе и подтверждает клиенту
 @dp.message(lambda message: message.web_app_data is not None)
 async def handle_web_app_data(message: types.Message):
     order_data = message.web_app_data.data
+    
+    # Получаем данные о покупателе
+    user = message.from_user
+    username = f"@{user.username}" if user.username else "Нет юзернейма"
+    full_name = user.full_name
+    user_id = user.id
+    user_link = f"tg://user?id={user_id}"
+
+    # Сообщение, которое прилетит лично тебе в чат
+    admin_notification = (
+        f"🔔 **ПОЛУЧЕН НОВЫЙ ЗАКАЗ!**\n\n"
+        f"👤 **Покупатель:** {full_name} ({username})\n"
+        f"🆔 **ID пользователя:** `{user_id}`\n"
+        f"💬 **Написать клиенту:** [Перейти в чат]({user_link})\n\n"
+        f"{order_data}"
+    )
+
+    # 1. Отправляем уведомление тебе (админу) в личку
+    try:
+        await bot.send_message(
+            chat_id=ADMIN_CHAT_ID,
+            text=admin_notification,
+            parse_mode="Markdown",
+            disable_web_page_preview=True
+        )
+    except Exception as e:
+        logging.error(f"Не удалось отправить сообщение админу: {e}")
+
+    # 2. Пишем клиенту в чат, что всё принято
     await message.answer(
-        f"✅ **Заказ успешно сформирован!**\n\n"
+        f"✅ **Заказ успешно отправлен оператору!**\n\n"
         f"📋 **Твой заказ:**\n{order_data}\n\n"
-        f"Перешли это сообщение оператору {OPERATOR_MAIN} или {OPERATOR_ALT}, чтобы подтвердить доставку/самовывоз и получить реквизиты для оплаты! 🙌",
+        f"Оператор {OPERATOR_MAIN} или {OPERATOR_ALT} свяжется с тобой в ближайшее время для подтверждения выдачи. Спасибо! 🙌",
         parse_mode="Markdown"
     )
 
