@@ -1,15 +1,24 @@
-function copyOrderText() {
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Vape Dealer Shop</title>
+    <!-- Подключаем Telegram Web Apps SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <h1>Добро пожаловать в Vape Dealer!</h1>
+    <p>Здесь будет твой каталог товаров.</p>
+    
+    <!-- Твоя функция здесь -->
+    <script>
+        function copyOrderText() {
             const orderText = document.getElementById('order-text-area').value;
-            
-            // Проверяем, открыт ли сайт внутри Telegram WebApp
             if (window.Telegram && window.Telegram.WebApp) {
                 const tg = window.Telegram.WebApp;
-                
-                // Отправляем данные заказа обратно боту
                 tg.sendData(orderText);
-                tg.close(); // Закрываем мини-приложение после отправки
+                tg.close();
             } else {
-                // Если открыли просто в обычном браузере, сработает обычное копирование
                 const textArea = document.getElementById('order-text-area');
                 textArea.select();
                 try {
@@ -20,3 +29,6 @@ function copyOrderText() {
                 }
             }
         }
+    </script>
+</body>
+</html>
