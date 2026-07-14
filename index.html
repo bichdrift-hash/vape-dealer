@@ -2,17 +2,52 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vape Dealer Shop</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        body { 
-            background-color: #212121; /* Тёмный фон как в Telegram */
-            color: #ffffff;           /* Белый текст */
-            font-family: sans-serif; 
-            padding: 20px; 
-        }
+        body { background-color: #1c1c1c; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 10px; margin: 0; }
+        h1 { text-align: center; color: #ffcc00; }
+        .product { background: #2c2c2c; border-radius: 15px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; }
+        .emoji { font-size: 30px; margin-right: 15px; }
+        .info { flex-grow: 1; }
+        .name { font-weight: bold; font-size: 16px; }
+        .desc { font-size: 12px; color: #bbb; margin: 5px 0; }
+        .price { color: #4CAF50; font-weight: bold; }
+        button { background: #ffcc00; border: none; padding: 10px; border-radius: 10px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 5px; }
+        #order-btn { background: #4CAF50; color: white; position: fixed; bottom: 10px; left: 10px; right: 10px; padding: 15px; border-radius: 15px; text-align: center; font-size: 18px; }
     </style>
 </head>
 <body>
-    <h1>Добро пожаловать в Vape Dealer!</h1>
-    <p>Здесь скоро появится каталог наших жидкостей и устройств.</p>
+    <h1>Elfliq - 180 MDL</h1>
+    <div id="catalog">
+        <!-- Список товаров -->
+        <div class="product"><div class="emoji">🍎</div><div class="info"><div class="name">Яблоко Персик</div><div class="desc">Сладкое яблоко и сочный персик</div><div class="price">180 лей</div><button onclick="add('Яблоко Персик')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🍇</div><div class="info"><div class="name">Ежевика Лимон</div><div class="desc">Терпкая ежевика с кислинкой</div><div class="price">180 лей</div><button onclick="add('Ежевика Лимон')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🫐</div><div class="info"><div class="name">Голубая Малина Лед</div><div class="desc">Ягоды с холодком</div><div class="price">180 лей</div><button onclick="add('Голубая Малина Лед')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🫐</div><div class="info"><div class="name">Черника Роза Мята</div><div class="desc">Уникальный цветочный вкус</div><div class="price">180 лей</div><button onclick="add('Черника Роза Мята')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🫐</div><div class="info"><div class="name">Черника Кислая Малина</div><div class="desc">Ягодный взрыв</div><div class="price">180 лей</div><button onclick="add('Черника Кислая Малина')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🍒</div><div class="info"><div class="name">Вишневая Кола</div><div class="desc">Классический вкус напитка</div><div class="price">180 лей</div><button onclick="add('Вишневая Кола')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🍒</div><div class="info"><div class="name">Вишня Лимон Персик</div><div class="desc">Фруктовое трио</div><div class="price">180 лей</div><button onclick="add('Вишня Лимон Персик')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🧃</div><div class="info"><div class="name">Эльф Джек</div><div class="desc">Фирменный микс</div><div class="price">180 лей</div><button onclick="add('Эльф Джек')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">⚡️</div><div class="info"><div class="name">Энергетик Лед</div><div class="desc">Бодрящий холодный напиток</div><div class="price">180 лей</div><button onclick="add('Энергетик Лед')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🍇</div><div class="info"><div class="name">Зеленый Виноград Роза</div><div class="desc">Нежный виноград с розой</div><div class="price">180 лей</div><button onclick="add('Зеленый Виноград Роза')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🌸</div><div class="info"><div class="name">Жасмин Малина</div><div class="desc">Цветочный аромат малины</div><div class="price">180 лей</div><button onclick="add('Жасмин Малина')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🥝</div><div class="info"><div class="name">Киви Маракуйя Гуава</div><div class="desc">Тропический микс</div><div class="price">180 лей</div><button onclick="add('Киви Маракуйя Гуава')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🥥</div><div class="info"><div class="name">Пина Колада</div><div class="desc">Кокос и ананас</div><div class="price">180 лей</div><button onclick="add('Пина Колада')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🍋</div><div class="info"><div class="name">Розовый Лимонад</div><div class="desc">Освежающий лимонад</div><div class="price">180 лей</div><button onclick="add('Розовый Лимонад')">Добавить</button></div></div>
+        <div class="product"><div class="emoji">🍓</div><div class="info"><div class="name">Клубника Вишня Лимон</div><div class="desc">Ягодное ассорти</div><div class="price">180 лей</div><button onclick="add('Клубника Вишня Лимон')">Добавить</button></div></div>
+    </div>
+    
+    <div id="order-btn" onclick="sendOrder()">Заказать</div>
+
+    <script>
+        let cart = [];
+        function add(item) { cart.push(item); alert(item + ' добавлено!'); }
+        function sendOrder() {
+            if(cart.length === 0) return alert('Корзина пуста!');
+            window.Telegram.WebApp.sendData(cart.join(', '));
+        }
+    </script>
 </body>
 </html>
